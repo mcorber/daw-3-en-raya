@@ -34,6 +34,19 @@ class Marcador {
     marcadorFrontend.innerHTML = '';
     marcadorFrontend.append(ul);
   }
+
+  getFirstPlayerPoints(){
+    return this.#jugadores[0].puntos;
+  }
+  getSecondPlayerPoints(){
+    return this.#jugadores[1].puntos;
+  }
+  getFirstPlayerName(){
+    return this.#jugadores[0].name;
+  }
+  getSecondPlayerName(){
+    return this.#jugadores[1].name;
+  }
 }
 
 export default Marcador;

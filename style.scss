@@ -1,19 +1,47 @@
+.roboto-regular {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.roboto-medium {
+  
+}
+
+.roboto-bold {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+*{
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+
 #tablero {
+
+  justify-self: center;
   display: grid;
   margin: 0 auto;
   margin-top: 5%;
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
+  margin: 0 auto;
+  width: 100%;
   max-width: 500px;
+  background-color: aqua;
   >div {
     height: 100px;
-    border: 1px solid black;
+    
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 2em;
     font-weight: bold;
+    background-color: #242424;
     &[data-libre='']:hover{
       background-color: #444;
       cursor: pointer;
@@ -22,6 +50,9 @@
     &[data-libre='X'],&[data-libre='O'],&[data-libre='-']{
       cursor: not-allowed;
     }
+  }
+  &.hide{
+    display: none;
   }
 }
 
@@ -32,6 +63,12 @@
 }
 
 .preGame{
+  display: block;
+  &.hide{
+    display: none;
+  }
+}
+.clearGameButton{
   display: block;
   &.hide{
     display: none;
@@ -52,4 +89,128 @@
     display: block;
     text-align: center;
   }
+}
+div.preGame{
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  text-align: start;
+  label{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 5px;
+    color: #939292;
+    text-transform: uppercase;
+    font-size: 17px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    input{
+      margin-top: 9px;
+      border: none;
+      background-color: transparent;
+      border-bottom: 5px solid grey;
+      color: white;
+    }
+  }
+  *{
+    width: 100%;
+  }
+  .machine{
+    display: flex;
+    flex-direction: row;
+    input{
+      width: 20%;
+      background-color: grey;
+      color: #FAFAFA;
+    }
+  }
+
+  
+  #createTable{
+    background-color: grey;
+    padding: 10px 30px;
+    width: fit-content;
+    border-radius: 10px;
+    color: #FAFAFA;
+    &:hover{
+      transform: scale(1.2);
+      transition: all 0.4s linear;
+    }
+  }
+}
+.inGame{
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+button{
+    background-color: grey;
+    padding: 10px 20px;
+    width: fit-content;
+    border-radius: 10px;
+    color: #FAFAFA;
+  }
+
+
+.roundsContainer{
+  display: none;
+  &.show{
+    display: block;
+    text-align: center;
+  }
+  h3{
+    color: #Fafafa;
+    text-transform: uppercase;
+  }
+}
+
+.actionsContainer{
+  margin-top: 20px;
+  display: none;
+  &.show{
+    display: block;
+    text-align: center;
+  }
+  li{
+    color: #FAFAFA;
+  }
+}
+#marcador{
+  list-style: none;
+  ul{
+    list-style: none;
+    text-align: center;
+    padding: 0;
+    li{
+      color: #FAFAFA;
+      text-transform: uppercase;
+      width: 100%;
+    }
+  }
+}
+
+.ganador{
+  *{
+    color: #FAFAFA;
+    text-transform: uppercase;
+
+  }
+  display: none;
+  text-align: center;
+  &.show{
+    display: block;
+  }
+}
+
+body{
+  
+  height: 80vh;
+  display: grid;
+  place-items: center;
+  background-color:#242424 ;
+  padding: 40px 20px;
 }

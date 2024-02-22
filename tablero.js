@@ -8,12 +8,17 @@ class Tablero {
   #turno;     // En esta variable queda guardo a quien le toca, toma valores: X o O
   #elementID;
   #marcador;
+  #maxRounds;
   #versusMachine;
   #endGame = false;
+  #actions = []
 
-  constructor(dimension = 3, versusMachine=false) {
+  constructor(dimension = 3, versusMachine=false, maxrounds) {
+    let tablero = document.getElementById('tablero');
+    tablero.dataset.round = 0;
     this.#casillas = new Array();
     this.#dimension = dimension;
+    this.#maxRounds = maxrounds;
     this.#versusMachine = versusMachine;
     for (let i = 0; i <this.#dimension; i++){
       this.#casillas[i] = new Array();
@@ -23,12 +28,23 @@ class Tablero {
     }
     this.#turno = 'X';
     this.#marcador = new Marcador();
+
+  }
+
+  imprimirRondas(){
+    let tablero = document.getElementById(this.#elementID);
+    let currentRound = parseInt(tablero.dataset.round);
+    let infoCurrentRound = document.querySelector('.roundsContainer h3');
+    infoCurrentRound.textContent = `Ronda : ${parseInt(currentRound+1)} / ${this.#maxRounds}`;
   }
 
   imprimir(elementId='tablero') {
-    let tablero = document.getElementById(elementId);
+    
+   
     this.#elementID = elementId;
+    let tablero = document.getElementById(this.#elementID);
     tablero.innerHTML = '';
+     this.imprimirRondas();
     for (let fila = 0; fila < this.#dimension; fila++){
       for (let columna = 0; columna < this.#dimension; columna++){
         let casilla = document.createElement('div');
@@ -44,6 +60,7 @@ class Tablero {
       }
     }
     tablero.style.gridTemplateColumns = `repeat(${this.#dimension}, 1fr)`;
+    
   }
 
   isFree(fila, columna) {
@@ -175,6 +192,26 @@ class Tablero {
 
       this.#marcador.addPuntos(this.#turno);
       document.querySelector('.clearGame').classList.toggle('show');
+      let tablero = document.getElementById(this.#elementID);
+      let currentRound = parseInt(tablero.dataset.round);
+      if((this.#maxRounds-1)===(currentRound)){
+        tablero.classList.toggle('hide');
+        let ganador = document.getElementById('ganador');
+        ganador.classList.toggle('show');
+        document.getElementById('actions').classList.toggle('show');
+        ganador.querySelector('h1').textContent=`Fin del juego`;
+        document.querySelector('.clearGameButton').classList.toggle('hide');
+        document.querySelector('.clearGame').classList.toggle('show');
+        if(this.#marcador.getFirstPlayerPoints() > this.#marcador.getSecondPlayerPoints()){
+          ganador.querySelector('h3').textContent=`Ha ganado ${this.#marcador.getFirstPlayerName()} con ${this.#marcador.getFirstPlayerPoints()} puntos`;
+          
+        }else if(this.#marcador.getFirstPlayerPoints() < this.#marcador.getSecondPlayerPoints()){
+          ganador.querySelector('h3').textContent=`Ha ganado ${this.#marcador.getSecondPlayerName()} con ${this.#marcador.getSecondPlayerPoints()} puntos`;
+          
+        }else{
+          ganador.querySelector('h3').textContent='EMPATE'
+        }
+      }
     } else {
       // Si no se ha ganado hay que comprobar si el tablero está petao, si es así son tablas
       if (this.isFull()) {
@@ -190,8 +227,23 @@ class Tablero {
           },
           onClick: function(){} // Callback after click
         }).showToast();
+        document.querySelector('.clearGameButton').classList.toggle('hide');
         document.querySelector('.clearGame').classList.toggle('show');
         this.#endGame = true;
+        if((this.#maxRounds-1)===(currentRound)){
+          console.log("Fin del juego");
+          document.querySelector('.clearGame').classList.toggle('show');
+          debugger;
+          if(this.#marcador.getFirstPlayerPoints() > this.#marcador.getSecondPlayerPoints()){
+            
+            console.log(`Ha ganado ${this.#marcador.getFirstPlayerName()} con ${this.#marcador.getFirstPlayerPoints()} puntos`);
+          }else if(this.#marcador.getFirstPlayerPoints() < this.#marcador.getSecondPlayerPoints()){
+            
+            console.log(`Ha ganado ${this.#marcador.getSecondPlayerName()} con ${this.#marcador.getSecondPlayerPoints()} puntos`);
+          }else{
+            console.log("Empate");
+          }
+        }
       }
     }
 
@@ -200,6 +252,34 @@ class Tablero {
   isFull() {
     return !this.#casillas.some(fila => fila.some(casilla => casilla === null));
   }
+
+  saveAction(fila,columna,turno){
+    let nuevaAccion = {
+      'fila': fila,
+      'columna':columna,
+      'turno' : turno
+    }
+
+    this.#actions.push(nuevaAccion);
+  }
+
+  clearActions(){
+    let actions = document.getElementById('actions');
+    actions.innerHTML = "";
+    this.#actions.splice(0,this.#actions.length);
+    this.showAction()
+  }
+
+  showAction() {
+    let actions = document.getElementById('actions');
+    actions.innerHTML = "";
+    this.#actions.map(action => {
+        let newLi = document.createElement('li');
+        newLi.textContent = `El jugador ${action.turno} ha movido ficha en fila: ${action.fila}, columna: ${action.columna}`;
+        actions.appendChild(newLi);
+    });
+}
+
 
   addEventClick(casilla) {
     casilla.addEventListener('click', (e) => {
@@ -211,6 +291,13 @@ class Tablero {
           casillaSeleccionada.dataset.columna,
           this.#turno
         )
+        this.saveAction(
+          casillaSeleccionada.dataset.fila,
+          casillaSeleccionada.dataset.columna,
+          this.#turno
+        )
+        this.showAction();
+        this
         casillaSeleccionada.dataset.libre = this.#turno;
         this.comprobarResultados();
         this.toogleTurno();
@@ -239,9 +326,15 @@ class Tablero {
   }
 
   limpiar() {
+    let tablero = document.getElementById(this.#elementID);
+    let currentRound = parseInt(tablero.dataset.round);
+    tablero.dataset.round = currentRound + parseInt(1);
     this.#casillas = this.#casillas.map(casilla => casilla.map(c => null));
     this.#endGame = false;
+    
     this.imprimir();
+    this.imprimirRondas();
+    this.clearActions()
     document.querySelector('.clearGame').classList.toggle('show');
   }
 
